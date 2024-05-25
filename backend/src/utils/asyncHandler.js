@@ -3,7 +3,7 @@
 
 
 
-const asyncHandler = (fn) => async(req, res, next) =>{
+export const asyncHandler = (fn) => async(req, res, next) =>{
     try {
         fn(req, res, next)
     } catch (error) {
