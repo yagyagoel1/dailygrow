@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { createNewUser } from "../utils/createUser.js";
 import { createTaskSchema, updateTaskSchema } from "../utils/schemas.js";
 import { store } from "../utils/store.js";
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -16,6 +17,8 @@ const  getTasks  = asyncHandler(async (req, res, next) => {
           sameSite: 'none'
       }).json(new ApiResponse(200, 'Tasks fetched successfully', store[id]))
     }
+    if(!store[req.user.userid]){//if the store(express) has been reseted, work with previously stored token
+        store[req.user.userid]=[]}
     res.status(200).json(new ApiResponse(200, 'Tasks fetched successfully', store[req.user.userid]));
 });
 
@@ -29,6 +32,8 @@ const getTaskById= asyncHandler(async (req, res, next) => {
             sameSite: 'none'
         }).json(new ApiResponse(400, 'Not Authorized', []))
     }
+    if(!store[req.user.userid]){
+        store[req.user.userid]=[]}
     const task= store[req.user.userid].find(task=>task.id === id);    
     if(!task){
         return res.status(404).json(new ApiResponse(404, 'Task not found', []))
@@ -37,7 +42,8 @@ const getTaskById= asyncHandler(async (req, res, next) => {
 });
 
 const createTask = asyncHandler(async (req, res, next) => { 
-    const {title,description,dueDate,status} = req.body;
+    let {title,description,dueDate,status} = req.body;
+    dueDate = new Date();
     if(!req.user){
         const token =  await createNewUser()
         return res.status(400).cookie('token', token, {
@@ -45,7 +51,9 @@ const createTask = asyncHandler(async (req, res, next) => {
             secure: true,
             sameSite: 'none'
         }).json(new ApiResponse(400, 'Not Authorized', []))
-    }
+    }if(!store[req.user.userid]){
+        store[req.user.userid]=[]}
+
     const validate= createTaskSchema({title,description,dueDate,status});
     if(!validate.success){
         return res.status(400).json(new ApiResponse(400, validate.error.message, []))
@@ -66,10 +74,15 @@ const updateTask = asyncHandler(async (req, res, next) => {
             sameSite: 'none'
         }).json(new ApiResponse(400, 'Not Authorized', []))
     }
+    if(!store[req.user.userid]){
+        store[req.user.userid]=[]}
     const validate= updateTaskSchema({title,description,dueDate,status});
     if(!validate.success){
         return res.status(400).json(new ApiResponse(400, validate.error.message, []))
     }
+    console.log(store[req.user.userid])
+    console.log(req.user.userid)
+    console.log(id)
     const task= store[req.user.userid].find(task=>task.id === id);
     if(!task){
         return res.status(404).json(new ApiResponse(404, 'Task not found', []))
@@ -90,7 +103,8 @@ const deleteTask = asyncHandler(async (req, res, next) => {
             sameSite: 'none'
         }).json(new ApiResponse(400, 'Not Authorized', []))
     }
-   
+    if(!store[req.user.userid]){
+        store[req.user.userid]=[]}
     store[req.user.userid] = store[req.user.userid].filter(task=>task.id !== id);
     res.status(200).json(new ApiResponse(200, 'Task deleted successfully', []));
 })
