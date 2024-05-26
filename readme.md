@@ -7,7 +7,8 @@ This project is a todo application
 ## To Run Locally
 
 ```bash
-cd project-name/backend
+git clone https://github.com/yagyagoel1/dailygrow
+cd dailygrow/backend
 npm install
 npm run dev
 cd ../frontend
