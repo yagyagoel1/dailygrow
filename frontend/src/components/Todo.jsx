@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 const options = [
@@ -23,6 +24,7 @@ const Todo = (props) => {
     await axios.delete(`http://localhost:3000/api/v1/tasks/${props.id}`, {
       withCredentials: true,
     });
+
     window.location.reload();
   };
 
@@ -30,8 +32,11 @@ const Todo = (props) => {
     setCurrentOption((prevOption) => (prevOption + 1) % options.length);
     await axios.put(
       `http://localhost:3000/api/v1/tasks/${props.id}`,
-      { status: options[currentOption + 1].label },
+      { status: options[(currentOption + 1) % 3].label },
       { withCredentials: true }
+    );
+    toast.success(
+      `Task status updated to ${options[(currentOption + 1) % 3].label}`
     );
   };
 
@@ -65,7 +70,6 @@ const Todo = (props) => {
     }
   };
   useEffect(() => {
-    console.log(props.status);
     if (props.status === "completed") {
       setCurrentOption(2);
     } else if (props.status === "inProgress") {

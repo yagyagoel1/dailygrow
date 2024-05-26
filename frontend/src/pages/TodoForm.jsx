@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"; // If you're using Re
 import DatePicker from "react-datepicker"; // For the date picker
 import "react-datepicker/dist/react-datepicker.css"; // Import date picker styles
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const TodoForm = () => {
   const { id } = useParams(); // Assuming you're using React Router for navigation
@@ -10,13 +11,12 @@ const TodoForm = () => {
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(new Date());
   const [status, setStatus] = useState("pending");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  console.log(id);
+
   // Fetch existing todo data if ID is provided (for update functionality)
   useEffect(() => {
-    console.log("no ram");
     if (id !== "create") {
-      console.log("ram");
       axios
         .get(`http://localhost:3000/api/v1/tasks/${id}`, {
           withCredentials: true,
@@ -32,6 +32,7 @@ const TodoForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     // Here you would handle the form submission based on whether it's an update or create operation
     if (id !== "create") {
       await axios.put(
@@ -60,11 +61,15 @@ const TodoForm = () => {
         }
       );
     }
+    toast.success("Todo saved successfully");
+    setIsLoading(false);
     navigate("/");
   };
-
+  const isFormValid = () => {
+    return title.length >= 1 && description.length >= 1;
+  };
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-32 p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-4">
         {id !== "create" ? "Update Todo" : "Create Todo"}
       </h1>
@@ -134,9 +139,21 @@ const TodoForm = () => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+          disabled={!isFormValid() || isLoading} // Disable button when form is invalid or loading
+          className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          } ${!isFormValid() ? "bg-gray-300 hover:bg-gray-300" : ""}`}
         >
-          {id !== "create" ? "Update Todo" : "Create Todo"}
+          {isLoading ? (
+            <div>
+              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
+              Loading..
+            </div>
+          ) : id !== "create" ? (
+            "Update Todo"
+          ) : (
+            "Create Todo"
+          )}
         </button>
       </form>
     </div>

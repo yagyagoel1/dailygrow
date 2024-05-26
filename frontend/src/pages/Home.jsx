@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex flex-col items-center justify-center pt-32 bg-gray-100">
       {!todos.length == 0 ? (
         todos.map((todo) => {
           return (

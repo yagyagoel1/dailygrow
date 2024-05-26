@@ -4,10 +4,13 @@ import "./App.css";
 import AppBar from "./components/AppBar";
 import Home from "./pages/Home";
 import TodoForm from "./pages/TodoForm";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
+
       <BrowserRouter>
         <AppBar />
         <Routes>
