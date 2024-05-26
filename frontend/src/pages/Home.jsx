@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useEffect, useState } from "react";
 import Todo from "../components/Todo";
 import axios from "axios";
@@ -18,7 +17,7 @@ function App() {
       }
     };
 
-    fetchTodos();
+    fetchTodos(); // fetch todos on render
   }, []);
 
   return (

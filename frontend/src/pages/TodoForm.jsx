@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // If you're using React Router for navigation
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker"; // For the date picker
-import "react-datepicker/dist/react-datepicker.css"; // Import date picker styles
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const TodoForm = () => {
-  const { id } = useParams(); // Assuming you're using React Router for navigation
+  const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(new Date());
@@ -14,7 +13,7 @@ const TodoForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch existing todo data if ID is provided (for update functionality)
+  // Fetch existing todo data if ID is provided in the URL
   useEffect(() => {
     if (id !== "create") {
       axios
@@ -33,7 +32,7 @@ const TodoForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Here you would handle the form submission based on whether it's an update or create operation
+    //if updating a todo
     if (id !== "create") {
       await axios.put(
         `http://localhost:3000/api/v1/tasks/${id}`,
@@ -47,7 +46,9 @@ const TodoForm = () => {
           withCredentials: true,
         }
       );
-    } else {
+    }
+    //if creating a todo
+    else {
       await axios.post(
         `http://localhost:3000/api/v1/tasks/`,
         {
@@ -145,10 +146,7 @@ const TodoForm = () => {
           } ${!isFormValid() ? "bg-gray-300 hover:bg-gray-300" : ""}`}
         >
           {isLoading ? (
-            <div>
-              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
-              Loading..
-            </div>
+            <div className="flex">Loading..</div>
           ) : id !== "create" ? (
             "Update Todo"
           ) : (

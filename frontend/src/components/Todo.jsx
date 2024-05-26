@@ -13,13 +13,14 @@ const Todo = (props) => {
   const [currentOption, setCurrentOption] = useState(0);
   const navigate = useNavigate();
   const date = new Date(props.dueDate);
-
+  // Get the day, month, and year
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" }); // Full month name
   const year = date.getFullYear();
   const handleEdit = () => {
     navigate(`/todo/${props.id}`);
   };
+  // Delete todo
   const handleDeleteTodo = async () => {
     await axios.delete(`http://localhost:3000/api/v1/tasks/${props.id}`, {
       withCredentials: true,
@@ -27,7 +28,7 @@ const Todo = (props) => {
 
     window.location.reload();
   };
-
+  // Update todo status
   const handleCheckboxClick = async () => {
     setCurrentOption((prevOption) => (prevOption + 1) % options.length);
     await axios.put(
@@ -39,7 +40,7 @@ const Todo = (props) => {
       `Task status updated to ${options[(currentOption + 1) % 3].label}`
     );
   };
-
+  // Get the checkbox class
   const getCheckboxClass = (option) => {
     switch (option.color) {
       case "purple":
@@ -50,7 +51,7 @@ const Todo = (props) => {
         return "bg-white";
     }
   };
-
+  // Get the checkbox content
   const getCheckboxContent = (option) => {
     switch (option.color) {
       case "purple":
