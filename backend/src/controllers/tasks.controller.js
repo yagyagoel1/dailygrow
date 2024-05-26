@@ -15,7 +15,7 @@ const  getTasks  = asyncHandler(async (req, res, next) => {
           httpOnly: true,
           secure: true,
           sameSite: 'none'
-      }).json(new ApiResponse(200, 'Tasks fetched successfully', store[id]))
+      }).json(new ApiResponse(200, 'Tasks fetched successfully', []))
     }
     if(!store[req.user.userid]){//if the store(express) has been reseted, work with previously stored token
         store[req.user.userid]=[]}
@@ -26,7 +26,7 @@ const getTaskById= asyncHandler(async (req, res, next) => {
     const {id} = req.params;
     if(!req.user){
         const token =  await createNewUser()
-       return res.status(400).cookie('token', token, {
+       return res.status(300).cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none'
@@ -43,10 +43,9 @@ const getTaskById= asyncHandler(async (req, res, next) => {
 
 const createTask = asyncHandler(async (req, res, next) => { 
     let {title,description,dueDate,status} = req.body;
-    dueDate = new Date();
     if(!req.user){
         const token =  await createNewUser()
-        return res.status(400).cookie('token', token, {
+        return res.status(300).cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none'
@@ -68,7 +67,7 @@ const updateTask = asyncHandler(async (req, res, next) => {
     const {title,description,dueDate,status} = req.body;
     if(!req.user){
         const token =  await createNewUser()
-        return res.status(400).cookie('token', token, {
+        return res.status(300).cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none'
@@ -80,9 +79,7 @@ const updateTask = asyncHandler(async (req, res, next) => {
     if(!validate.success){
         return res.status(400).json(new ApiResponse(400, validate.error.message, []))
     }
-    console.log(store[req.user.userid])
-    console.log(req.user.userid)
-    console.log(id)
+    
     const task= store[req.user.userid].find(task=>task.id === id);
     if(!task){
         return res.status(404).json(new ApiResponse(404, 'Task not found', []))
@@ -97,7 +94,7 @@ const deleteTask = asyncHandler(async (req, res, next) => {
     const {id} = req.params;
     if(!req.user){
         const token =  await createNewUser()
-        return res.status(400).cookie('token', token, {
+        return res.status(300).cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none'
